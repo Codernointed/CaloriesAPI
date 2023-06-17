@@ -1,4 +1,6 @@
-
+"""
+ I used the requests library to make HTTP requests to the API and retrieve the calorie information
+ """
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth import get_user_model
