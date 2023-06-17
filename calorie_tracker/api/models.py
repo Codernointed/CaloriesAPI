@@ -44,7 +44,7 @@ class Entry(models.Model):
     def save(self, *args, **kwargs):
         if not self.calories:
             try:
-                #a request to the Calories API provider to get the calories for the entered meal
+                #A request to the Calories API provider to get the calories for the entered meal
                 api_url = 'https://www.nutritionix.com/api/v1/calories'
                 response = requests.get(api_url, params={'meal': self.text})
             
