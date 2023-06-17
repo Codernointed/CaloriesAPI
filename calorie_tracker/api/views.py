@@ -1,7 +1,9 @@
+from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from api.models import User, Entry
 from api.serializers import UserSerializer, EntrySerializer
-
+from rest_framework.response import Response
+from rest_framework.decorators import action
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -16,6 +18,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated()]
 
 
+
 class EntryViewSet(viewsets.ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
@@ -26,9 +29,23 @@ class EntryViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
+        date = self.request.query_params.get('date')
+
         if user.role == 'admin':
-            return Entry.objects.all()
+            queryset = Entry.objects.all()
         elif user.role == 'user_manager':
-            return Entry.objects.filter(user__role='regular')
+            queryset = Entry.objects.filter(user__role='regular')
         else:
-            return Entry.objects.filter(user=user)
+            queryset = Entry.objects.filter(user=user)
+        
+        if date:
+            queryset = queryset.filter(date=date)
+        
+        return queryset
+    
+    @action(detail=False, methods=['get'])
+    def below_expected(self, request):
+        user = request.user
+        entries = Entry.objects.filter(user=user, is_below_expected=True)
+        serializer = self.get_serializer(entries, many=True)
+        return Response(serializer.data)
