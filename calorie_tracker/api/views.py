@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from api.models import User, Entry
+from api.serializers import UserSerializer, EntrySerializer
 
-# Create your views here.
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class EntryViewSet(viewsets.ModelViewSet):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
